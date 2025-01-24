@@ -11,11 +11,18 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("Currency Exchange")
 
-	baseCurrency := widget.NewEntry()
-	baseCurrency.SetPlaceHolder("Enter base currency (e.g., USD)")
+	popularCurrencies := []string{
+		"USD", "EUR", "GBP", "RUB", "BGN", "JPY", "CNY", "AUD", "CAD",
+		"CHF", "SEK", "NZD", "SGD", "ZAR",
+	}
 
-	targetCurrency := widget.NewEntry()
-	targetCurrency.SetPlaceHolder("Enter target currency (e.g., EUR)")
+	baseCurrency := widget.NewSelect(popularCurrencies, func(value string) {
+	})
+	baseCurrency.PlaceHolder = "Select base currency"
+
+	targetCurrency := widget.NewSelect(popularCurrencies, func(value string) {
+	})
+	targetCurrency.PlaceHolder = "Select target currency"
 
 	amountEntry := widget.NewEntry()
 	amountEntry.SetPlaceHolder("Enter amount")
