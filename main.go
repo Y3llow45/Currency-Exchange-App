@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"time"
 
@@ -102,6 +103,7 @@ func main() {
 	for currency := range data.ConversionRates {
 		currencies = append(currencies, currency)
 	}
+	sort.Strings(currencies)
 
 	baseCurrency := widget.NewSelect(currencies, func(value string) {})
 	baseCurrency.PlaceHolder = "Select base currency"
