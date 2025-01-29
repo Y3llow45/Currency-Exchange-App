@@ -31,11 +31,12 @@ type ExchangeRates struct {
 
 var history []string
 
-func addToHistory(from string, amount float64, to string, converted float64) {
-	entry := fmt.Sprintf("%s: %.2f - %s: %.2f", from, amount, to, converted)
+func addToHistory(from string, amount string, to string, converted float64) {
+	amountValue, _ := strconv.ParseFloat(amount, 64)
+	entry := fmt.Sprintf("%s: %.2f - %s: %.2f", from, amountValue, to, converted)
 	history = append(history, entry)
 
-	if len(history) > 10 {
+	if len(history) > 100 { //keep last 100
 		history = history[1:]
 	}
 }
@@ -118,11 +119,24 @@ func main() {
 
 	baseCurrency := widget.NewSelect(currencies, func(value string) {})
 	baseCurrency.PlaceHolder = "Select base currency"
-	baseCurrency.Resize(fyne.NewSize(50, baseCurrency.MinSize().Height))
+	baseCurrencyContainer := container.NewHBox(baseCurrency)
+	baseCurrencyContainer.Resize(fyne.NewSize(150, baseCurrency.MinSize().Height))
 
 	targetCurrency := widget.NewSelect(currencies, func(value string) {})
 	targetCurrency.PlaceHolder = "Select target currency"
-	targetCurrency.Resize(fyne.NewSize(50, targetCurrency.MinSize().Height))
+	targetCurrencyContainer := container.NewHBox(targetCurrency)
+	targetCurrencyContainer.Resize(fyne.NewSize(150, targetCurrency.MinSize().Height))
+
+	historyList := widget.NewList(
+		func() int { return len(history) },
+		func() fyne.CanvasObject { return widget.NewLabel("") },
+		func(i widget.ListItemID, obj fyne.CanvasObject) {
+			obj.(*widget.Label).SetText(history[i])
+		},
+	)
+
+	historyContainer := container.NewVScroll(historyList)
+	historyContainer.SetMinSize(fyne.NewSize(400, 400))
 
 	amountEntry := widget.NewEntry()
 	amountEntry.SetPlaceHolder("Enter amount")
@@ -153,6 +167,7 @@ func main() {
 		}
 
 		convertedValue := (amountValue / baseRate) * targetRate
+		addToHistory(base, amount, target, convertedValue)
 		resultLabel.SetText(fmt.Sprintf("Converted Amount: %.2f %s", convertedValue, target))
 	})
 
@@ -163,6 +178,7 @@ func main() {
 		amountEntry,
 		convertButton,
 		resultLabel,
+		historyList,
 	)
 
 	w.SetContent(content)
