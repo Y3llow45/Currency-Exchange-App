@@ -29,6 +29,17 @@ type ExchangeRates struct {
 	ConversionRates  map[string]float64 `json:"conversion_rates"`
 }
 
+var history []string
+
+func addToHistory(from string, amount float64, to string, converted float64) {
+	entry := fmt.Sprintf("%s: %.2f - %s: %.2f", from, amount, to, converted)
+	history = append(history, entry)
+
+	if len(history) > 10 {
+		history = history[1:]
+	}
+}
+
 func FetchData() (*ExchangeRates, error) {
 	resp, err := http.Get(apiURL)
 	if err != nil {
@@ -107,9 +118,11 @@ func main() {
 
 	baseCurrency := widget.NewSelect(currencies, func(value string) {})
 	baseCurrency.PlaceHolder = "Select base currency"
+	baseCurrency.Resize(fyne.NewSize(50, baseCurrency.MinSize().Height))
 
 	targetCurrency := widget.NewSelect(currencies, func(value string) {})
 	targetCurrency.PlaceHolder = "Select target currency"
+	targetCurrency.Resize(fyne.NewSize(50, targetCurrency.MinSize().Height))
 
 	amountEntry := widget.NewEntry()
 	amountEntry.SetPlaceHolder("Enter amount")
