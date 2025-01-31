@@ -119,29 +119,25 @@ func main() {
 
 	baseCurrency := widget.NewSelect(currencies, func(value string) {})
 	baseCurrency.PlaceHolder = "Select base currency"
-	baseCurrencyContainer := container.NewHBox(baseCurrency)
-	baseCurrencyContainer.Resize(fyne.NewSize(150, baseCurrency.MinSize().Height))
 
 	targetCurrency := widget.NewSelect(currencies, func(value string) {})
 	targetCurrency.PlaceHolder = "Select target currency"
-	targetCurrencyContainer := container.NewHBox(targetCurrency)
-	targetCurrencyContainer.Resize(fyne.NewSize(150, targetCurrency.MinSize().Height))
 
-	historyList := widget.NewList(
-		func() int { return len(history) },
-		func() fyne.CanvasObject { return widget.NewLabel("") },
-		func(i widget.ListItemID, obj fyne.CanvasObject) {
-			obj.(*widget.Label).SetText(history[i])
-		},
-	)
+	spacer := widget.NewLabel("")
+	spacer.Hide()
 
-	historyContainer := container.NewVScroll(historyList)
-	historyContainer.SetMinSize(fyne.NewSize(400, 400))
+	historyContainer := container.NewVBox()
+	for _, entry := range history {
+		historyContainer.Add(widget.NewLabel(entry))
+	}
 
 	amountEntry := widget.NewEntry()
 	amountEntry.SetPlaceHolder("Enter amount")
 
 	resultLabel := widget.NewLabel("Result will appear here")
+
+	scrollableHistory := container.NewVScroll(historyContainer)
+	scrollableHistory.SetMinSize(fyne.NewSize(400, 200))
 
 	convertButton := widget.NewButton("Convert", func() {
 		base := baseCurrency.Selected
@@ -169,19 +165,23 @@ func main() {
 		convertedValue := (amountValue / baseRate) * targetRate
 		addToHistory(base, amount, target, convertedValue)
 		resultLabel.SetText(fmt.Sprintf("Converted Amount: %.2f %s", convertedValue, target))
+		historyContainer.Add(widget.NewLabel(fmt.Sprintf("%s: %.2f - %s: %.2f", base, amountValue, target, convertedValue)))
+		scrollableHistory.ScrollToBottom()
 	})
 
 	content := container.NewVBox(
 		widget.NewLabel("Currency Exchange App"),
 		baseCurrency,
-		targetCurrency,
+		targetCurrency, 
 		amountEntry,
 		convertButton,
 		resultLabel,
-		historyList,
+		widget.NewLabel("Conversion History:"),
+		scrollableHistory,
 	)
 
 	w.SetContent(content)
-	w.Resize(fyne.NewSize(400, 300))
+	w.Resize(fyne.NewSize(400, 500))
+	w.SetFixedSize(false)
 	w.ShowAndRun()
 }
