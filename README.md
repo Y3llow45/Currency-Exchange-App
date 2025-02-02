@@ -6,7 +6,7 @@
 2. Create an account at this <a href="https://app.exchangerate-api.com">website</a> ( it's free! ).
 3. Go to the dashboard and copy "Example Request". It's going to look like this: https://v6.exchangerate-api.com/v6/{api_key}/latest/USD.
 4. Run the .exe and when the app opens, click on "Set API URL".
-5. Inside the input field paste the url you copied in step 4 and click on the "Set API URL" button again.
+5. Inside the input field paste the url you copied in step 3 and click on the "Set API URL" button again.
 6. Use the app.
 
 ## Notes
