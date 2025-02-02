@@ -119,7 +119,7 @@ func CheckData() (*ExchangeRates, error) {
 		data, err := LoadData()
 		if err == nil {
 			lastUpdate := time.Unix(data.TimeLastUpdateUnix, 0)
-			if lastUpdate.Format(dateFormat) == time.Now().Format(dateFormat) {
+			if time.Since(lastUpdate) <= 4*time.Second {
 				return data, nil
 			}
 		}
@@ -220,6 +220,14 @@ func main() {
 	scrollableHistory.SetMinSize(fyne.NewSize(400, 200))
 
 	convertButton := widget.NewButton("Convert", func() {
+		lastUpdate := time.Unix(data.TimeLastUpdateUnix, 0)
+		if time.Since(lastUpdate) > 10*time.Minute {
+			newData, err := FetchAndSaveData()
+			if err == nil {
+				data = newData
+			}
+		}
+
 		base := baseCurrency.Selected
 		target := targetCurrency.Selected
 		amount := amountEntry.Text
