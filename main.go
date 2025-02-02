@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	apiURL      = "https://v6.exchangerate-api.com/v6/6d7dcd183cb12ac6ee96ac6e/latest/USD"
+	apiURL      = "https://v6.exchangerate-api.com/v6/6d7dCd184cb12ac6ee96ac63/latest/USD"
 	dataFile    = "exchange_rates.json"
 	dateFormat  = "2006-01-02"
 )
@@ -54,7 +54,7 @@ func FetchData() (*ExchangeRates, error) {
 	}
 
 	if data.Result != "success" {
-		return nil, fmt.Errorf("API returned non-success result")
+		return nil, fmt.Errorf("api request failed")
 	}
 	return &data, nil
 }
@@ -103,7 +103,7 @@ func CheckAndFetchData() (*ExchangeRates, error) {
 
 func main() {
 	a := app.New()
-	w := a.NewWindow("Currency Exchange")
+	w := a.NewWindow("Currency Exchange App")
 
 	data, err := CheckAndFetchData()
 	if err != nil {
