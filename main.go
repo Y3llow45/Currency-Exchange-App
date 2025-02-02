@@ -16,10 +16,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+var apiURL = "https://v6.exchangerate-api.com/v6/6d7dCd184cb12ac6ee96ac63/latest/USD"
 const (
-	apiURL      = "https://v6.exchangerate-api.com/v6/6d7dCd184cb12ac6ee96ac63/latest/USD"
-	dataFile    = "exchange_rates.json"
-	dateFormat  = "2006-01-02"
+	dataFile = "exchange_rates.json"
+	dateFormat = "2006-01-02"
 )
 
 type ExchangeRates struct {
@@ -105,6 +105,22 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("Currency Exchange App")
 
+  apiURLEntry := widget.NewEntry()
+	apiURLEntry.SetPlaceHolder("Enter API URL")
+	apiURLEntry.Hide()
+
+  toggleButton := widget.NewButton("Set API URL", func() {
+		if apiURLEntry.Visible() {
+			apiURLEntry.Hide()
+      newURL := apiURLEntry.Text
+      if newURL != "" {
+				apiURL = newURL
+			}
+		} else {
+			apiURLEntry.Show()
+		}
+	})
+
 	data, err := CheckAndFetchData()
 	if err != nil {
 		fmt.Println("Error fetching exchange rates:", err)
@@ -171,6 +187,8 @@ func main() {
 
 	content := container.NewVBox(
 		widget.NewLabel("Currency Exchange App"),
+    toggleButton,
+		apiURLEntry,
 		baseCurrency,
 		targetCurrency, 
 		amountEntry,
